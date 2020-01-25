@@ -59,7 +59,7 @@ class PrecipitationIndices:
     def cwd(self, X: Union[xr.DataArray, xr.Dataset], period='1M', varname='PRCP'):
         def _cwd(x, axis):
             has_precip = x >= self.convert_units_fn(1.0)
-            return utils.max_consecutive_count(has_no_precip)
+            return utils.max_consecutive_count(has_precip)
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.sum(), time_dim=self.time_dim)
         return X_arr.resample({self.time_dim: period}).reduce(_cwd, dim=self.time_dim)
