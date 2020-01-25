@@ -36,4 +36,41 @@ def resample_daily(X: xr.DataArray,
     # resample X to daily
     X_resample = X.resample({time_dim: '1D'})
     return resample_op(X_resample)
+
+def max_consecutive_count(x):
+    assert hasattr(x, 'dtype') and x.dtype == np.bool, 'x should be a boolean ndarray or DataArray'
+    def _ffill(arr, axis):
+        """
+        Generic implementation of ffill borrowed from xarray.core.missing.ffill.
+        Requires bottleneck to work.
+        """
+        import bottleneck as bn
+        from xarray.core.computation import apply_ufunc
+        # work around for bottleneck 178
+        _limit = arr.shape[axis]
+        return apply_ufunc(
+            bn.push,
+            arr,
+            dask="allowed",
+            keep_attrs=True,
+            output_dtypes=[arr.dtype],
+            kwargs=dict(n=_limit, axis=axis),
+        )
+    # pad x with extra, opposite value to trigger switching logic for final value
+    x_ = np.concatenate([x, ~x[-1:]])
+    # [x[0], [1 : X[i] != X[i-1]]]; i.e. initial element + all elements where pattern changes
+    chunk_cond = np.concatenate([x_[:1], x_[1:] != x_[:-1]])
+    # create block of time indices, uniform across extra/spatial dimensions
+    all_indices = np.cumsum(np.ones(chunk_cond.shape), axis=0)
+    # select indices at change points
+    chunk_indices = np.where(chunk_cond, all_indices, np.empty(chunk_cond.shape)*np.nan)
+    # forward fill NaNs with previous index and replace any remaining nan values
+    filled_indices = np.nan_to_num(_ffill(chunk_indices, axis=0))
+    # take sequential difference between indices
+    # this gives us the distance between pattern changes, or chunk sizes;
+    # we multiply by the original boolean array x to filter out chunks of False values
+    true_counts = np.diff(filled_indices, axis=0)*x
+    # finally, take the max over all of the True chunk sizes
+    return true_counts.max(axis=0)
+    
     
