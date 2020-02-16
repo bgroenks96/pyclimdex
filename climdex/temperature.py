@@ -37,22 +37,22 @@ class TemperatureIndices:
     def monthly_txx(self, X: Union[xr.DataArray, xr.Dataset], varname=None):
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.max(), time_dim=self.time_dim)
-        return X.resample('1M').max()
+        return X.resample({self.time_dim: '1M'}).max()
     
     def monthly_txn(self, X: Union[xr.DataArray, xr.Dataset], varname=None):
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.max(), time_dim=self.time_dim)
-        return X.resample('1M').min()
+        return X.resample({self.time_dim: '1M'}).min()
     
     def monthly_tnx(self, X: Union[xr.DataArray, xr.Dataset], varname=None):
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.min(), time_dim=self.time_dim)
-        return X.resample('1M').max()
+        return X.resample({self.time_dim: '1M'}).max()
     
     def monthly_tnn(self, X: Union[xr.DataArray, xr.Dataset], varname=None):
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.min(), time_dim=self.time_dim)
-        return X.resample('1M').min()
+        return X.resample({self.time_dim: '1M'}).min()
     
     def daily_temperature_range(self,
                                 X1: Union[xr.DataArray, xr.Dataset],
