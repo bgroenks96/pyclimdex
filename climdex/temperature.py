@@ -15,6 +15,11 @@ class TemperatureIndices:
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.min(), time_dim=self.time_dim)
         return (X_arr < self.convert_units_fn(0.0)).astype(X_arr.dtype).groupby(f'{self.time_dim}.year').sum()
+    
+    def annual_tropical_nights(self, X: Union[xr.DataArray, xr.Dataset], varname='MINT'):
+        X_arr = utils.data_array_or_dataset_var(X, var=varname)
+        X_arr = utils.resample_daily(X_arr, lambda x: x.min(), time_dim=self.time_dim)
+        return (X_arr > self.convert_units_fn(20.0)).astype(X_arr.dtype).groupby(f'{self.time_dim}.year').sum()
 
     def annual_icing_days(self, X: Union[xr.DataArray, xr.Dataset], varname='MAXT'):
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
@@ -25,11 +30,6 @@ class TemperatureIndices:
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.max(), time_dim=self.time_dim)
         return (X_arr > self.convert_units_fn(25.0)).astype(X_arr.dtype).groupby(f'{self.time_dim}.year').sum()
-
-    def annual_tropical_nights(self, X: Union[xr.DataArray, xr.Dataset], varname='MINT'):
-        X_arr = utils.data_array_or_dataset_var(X, var=varname)
-        X_arr = utils.resample_daily(X_arr, lambda x: x.min(), time_dim=self.time_dim)
-        return (X_arr > self.convert_units_fn(20.0)).astype(X_arr.dtype).groupby(f'{self.time_dim}.year').sum()
     
     def annual_growing_season_length(self, X: Union[xr.DataArray, xr.Dataset], varname='MEANT'):
         raise NotImplementedError()
