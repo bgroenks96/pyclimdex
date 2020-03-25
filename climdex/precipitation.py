@@ -64,7 +64,8 @@ class PrecipitationIndices:
         def _sdii(x, axis):
             # count wet days
             has_precip = x >= self.convert_units_fn(1.0)
-            return np.sum(np.where(has_precip, x, 0.0), axis=axis) / np.sum(has_precip.astype(np.float32), axis=axis)
+            num_wet_days = np.sum(has_precip.astype(np.float32), axis=axis)
+            return np.sum(np.where(has_precip, x, 0.0), axis=axis) / np.where(num_wet_days > 0, num_wet_days, 1.0)
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.sum(), time_dim=self.time_dim)
         return X_arr.resample({self.time_dim: period}).reduce(_sdii, dim=self.time_dim)
