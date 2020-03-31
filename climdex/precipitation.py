@@ -35,7 +35,7 @@ class PrecipitationIndices:
             return np.sum(x >= self.convert_units_fn(nmm), axis=axis)
         X_arr = utils.data_array_or_dataset_var(X, var=varname)
         X_arr = utils.resample_daily(X_arr, lambda x: x.sum(), time_dim=self.time_dim)
-        return X_arr.groupby('Time.year').reduce(_count_rnmm)
+        return X_arr.groupby(f'{self.time_dim}.year').reduce(_count_rnmm)
     
     def annual_r10mm(self, X: Union[xr.DataArray, xr.Dataset], varname='PRCP'):
         """
