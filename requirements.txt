@@ -1,0 +1,5 @@
+dask
+distributed
+xarray
+numpy
+bottleneck
