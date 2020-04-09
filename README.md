@@ -5,26 +5,34 @@ Implementation of Climdex indices in Python/xarray/dask
 
 1. Install from pypi:
 
-    pip install pyclimdex
+```
+pip install pyclimdex
+```
 
 or from GitHub:
 
-    pip install git+https://github.com/bgroenks96/pyclimdex.git
+```
+pip install git+https://github.com/bgroenks96/pyclimdex.git
+```
 
 2. Import either temperature or precipitation indices
 
-    import climdex.precipitation as pdex
+```python
+import climdex.precipitation as pdex
+```
 
 3. Initialize indices and compute them on your xarray DataArray or Dataset
 
-    indices = pdex.indices(time_dim='time')
-    # compute total monthly precipitation;
-    # your data should be daily or sub-daily time scale
-    ptot = indices.prcptot(data, period='1M')
+```python
+   indices = pdex.indices(time_dim='time')
+   # compute total monthly precipitation;
+   # your data should be daily or sub-daily time scale
+   ptot = indices.prcptot(data, period='1M')
+```
 
 That's it! You can find more info on the Climdex indices [here](https://climdex.org).
 
-pyclimdex currently supports the following indices for temperature and precipitation respectively:
+`pyclimdex` currently supports the following indices for temperature and precipitation respectively:
 
 **Temperature**
 
